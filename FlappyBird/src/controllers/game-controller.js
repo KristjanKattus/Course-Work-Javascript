@@ -45,16 +45,20 @@ export default class GameController {
     
     animate() {
         setTimeout(() => {
-
-            if (this.pillarIndex % 30 === 0){
-                
-                this.model.removeFirstAddLast(true);
+                    
+            if (this.pillarIndex < 15){
+                if(this.pillarIndex < 5){
+                    this.model.removeFirstAddLast(true);
+                } else{
+                    this.pillarIndex++;
+                    this.model.removeFirstAddLast();
+                }
+                this.pillarIndex++;
             } else{
+                this.pillarIndex = 0;
                 this.model.removeFirstAddLast();
             }
-            let gameboard = document.getElementById("gameboard");
-            gameboard.removeChild(gameboard.firstChild);
-            
+            this.removeFirstRow();
             let lastItem = this.model.board[this.model.board.length - 1];
             this.getColumnHtml(lastItem, gameboard); 
             this.pillarIndex++;
@@ -63,6 +67,9 @@ export default class GameController {
         }, 50);
     }
 
+    removeFirstRow() {
+        this.viewContainer.firstChild.firstChild.remove()
+    }
     getColumnHtml(colData, content) {
             let colWidth = this.getColWidth(this.model.colCount);
             let rowHeight = this.getRowHeight(this.model.rowCount);
