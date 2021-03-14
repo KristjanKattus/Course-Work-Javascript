@@ -65,7 +65,7 @@ export default class GameBrain {
             this.board.push(this.createGameRow())
         }
     }
-    
+
 
 
     getGameBoard() { return this.board; }

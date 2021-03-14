@@ -5,6 +5,8 @@ export default class GameController {
         this.model = model;
         this.isRunning = false;
         this.pillarIndex = 0;
+        // this.colWidth = this.getColWidth();
+        // this.rowHeight = this.getRowHeight();
     }
 
     run() {
@@ -33,12 +35,16 @@ export default class GameController {
         }
     }
 
+    getColWidth(colCount) {
+        return (window.innerWidth - 17) / colCount;
+    }
+    getRowHeight(rowCount) {
+        return (window.innerHeight - document.getElementById('control').clientHeight - 3) / rowCount;
+    }
 
     
     animate() {
         setTimeout(() => {
-            let colWidth = (window.innerWidth - 17) / this.model.colCount ;
-            let rowHeight = (window.innerHeight - document.getElementById('control').clientHeight - 3) / this.model.rowCount;
 
             if (this.pillarIndex % 30 === 0){
                 
@@ -49,18 +55,28 @@ export default class GameController {
             let gameboard = document.getElementById("gameboard");
             gameboard.removeChild(gameboard.firstChild);
             
-            
+            let lastItem = this.model.board[this.model.board.length - 1];
+            this.getColumnHtml(lastItem, gameboard); 
+            this.pillarIndex++;
+            this.animate();
+    
+        }, 50);
+    }
+
+    getColumnHtml(colData, content) {
+            let colWidth = this.getColWidth(this.model.colCount);
+            let rowHeight = this.getRowHeight(this.model.rowCount);
+
             let colElem = document.createElement('div');
             colElem.left
             colElem.style.minWidth = colWidth + 'px';
             colElem.style.minHeight = rowHeight + 'px';
             colElem.style.display = 'inline-block';
             
-            let lastItem = this.model.board[this.model.board.length - 1];
-            lastItem.forEach(rowData => {
+            colData.forEach(rowData => {
                 let rowElem = document.createElement('div');
                 if (rowData === this.model.gameCellUp()) {
-                    rowElem.style.backgroundColor = '#228B22';
+                    rowElem.style.backgroundColor = '#32CD32';
                 } else if (rowData === this.model.gameCellDown()) {
                     rowElem.style.backgroundColor = '#228B22';
                 } else {
@@ -72,45 +88,15 @@ export default class GameController {
 
                 colElem.append(rowElem);
             });
-            gameboard.append(colElem);
-            this.pillarIndex++;
-            this.animate();
-    
-        }, 50);
+            content.append(colElem);
     }
-
 
     getBoardHtml(gamebrain) { 
         let content = document.createElement('div');
         content.id = "gameboard";
 
-        
-        let colWidth = (window.innerWidth - 17) / gamebrain.colCount ;
-        let rowHeight = (window.innerHeight - document.getElementById('control').clientHeight - 3) / gamebrain.rowCount;
-        
         gamebrain.getGameBoard().forEach(colData => {
-            let colElem = document.createElement('div');
-            colElem.left
-            colElem.style.minWidth = colWidth + 'px';
-            colElem.style.minHeight = rowHeight + 'px';
-            colElem.style.display = 'inline-block';
-            
-            colData.forEach(rowData => {
-                let rowElem = document.createElement('div');
-                if (rowData === gamebrain.gameCellUp()) {
-                    rowElem.style.backgroundColor = '#32CD32';
-                } else if (rowData === gamebrain.gameCellDown()) {
-                    rowElem.style.backgroundColor = '#228B22';
-                } else {
-                    rowElem.style.backgroundColor = '#00BFFF';
-                }
-
-                rowElem.style.minHeight = rowHeight + 'px';
-                rowElem.style.maxHeight = rowHeight + 'px';
-
-                colElem.append(rowElem);
-            });
-            content.append(colElem);
+            this.getColumnHtml(colData, content)
         });
 
         return content;
