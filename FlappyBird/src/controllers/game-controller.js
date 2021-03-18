@@ -1,3 +1,5 @@
+
+
 export default class GameController {
 
     constructor(model, viewContainer) {
@@ -5,31 +7,27 @@ export default class GameController {
         this.model = model;
         this.isRunning = false;
         this.pillarIndex = 0;
-        // this.colWidth = this.getColWidth();
-        // this.rowHeight = this.getRowHeight();
     }
 
     run() {
         this.isRunning = true;
-        // draw the initial game board, start the game
-        
         this.viewContainer.innerHTML = '';
-        
         this.viewContainer.append(this.getBoardHtml(this.model));
-        // start countdown
+        this.birdLocation = this.model.getBirdLocation();
+        this.placeBird();
         this.animate();
-        // start game-loop
-
     }
+
+    
 
     stop() {
         this.isRunning = false;
+        clearTimeout(this.timer);
     }
 
 
     resizeUI() {
         if(this.isRunning) {
-            // redraw
             this.viewContainer.innerHTML = '';
             this.viewContainer.append(this.getBoardHtml(this.model));
         }
@@ -42,34 +40,91 @@ export default class GameController {
         return (window.innerHeight - document.getElementById('control').clientHeight - 3) / rowCount;
     }
 
+    placeBird() {
+        this.birdLocation = this.model.getBirdLocation();
+        let x = 0;
+        for (let colInd = this.birdLocation[0]; colInd < this.birdLocation[1]; colInd++){
+            let col = this.viewContainer.firstElementChild.childNodes[colInd].childNodes;
+
+            let y = 0; 
+            for (let rowInd = this.birdLocation[2]; rowInd < this.birdLocation[3]; rowInd++){
+                col[rowInd].style.backgroundColor = this.getCellColour(this.model.getBirdCell(x, y));
+                y++;
+            }
+            x++;
+        }
+    }
+
+    removeBird(){
+        
+        let col  = this.viewContainer.firstElementChild.childNodes;
+        for (let colInd = this.birdLocation[0] - 1; colInd < this.birdLocation[1] - 1; colInd++){
+            for (let rowInd = this.birdLocation[2]; rowInd < this.birdLocation[3]; rowInd++) {
+                col[colInd].childNodes[rowInd].style.backgroundColor = '#00BFFF';
+            }
+        }
+    }
+
+    birdJump() {
+        this.model.birdJump();
+    }
+
     
     animate() {
-        setTimeout(() => {
-                    
-            if (this.pillarIndex < 15){
-                if(this.pillarIndex < 5){
-                    this.model.removeFirstAddLast(true);
-                } else{
-                    this.pillarIndex++;
-                    this.model.removeFirstAddLast();
-                }
-                this.pillarIndex++;
-            } else{
-                this.pillarIndex = 0;
-                this.model.removeFirstAddLast();
+        this.timer = setTimeout(() => {
+            this.moveBoard();
+            this.displayScore();
+            if(this.isRunning){
+                this.animate();
             }
-            this.removeFirstRow();
-            let lastItem = this.model.board[this.model.board.length - 1];
-            this.getColumnHtml(lastItem, gameboard); 
-            this.pillarIndex++;
-            this.animate();
-    
         }, 50);
     }
 
-    removeFirstRow() {
+    moveBoard() {
+
+        if (this.pillarIndex < 60){
+            if(this.pillarIndex < 6){
+                if(this.pillarIndex < 1){
+                    this.model.removeFirstAddLast(true, true);
+                }else{
+                    this.model.removeFirstAddLast(true, false);
+                }               
+            } else{
+                this.model.removeFirstAddLast();
+            }
+            this.pillarIndex++;
+        } else{
+            this.pillarIndex = 0;
+            this.model.removeFirstAddLast();
+        }
+
+        this.removeFirstColumn();
+        this.getColumnHtml(this.model.board[this.model.board.length - 1], gameboard);
+
+
+        if (this.model.checkCollision()){
+            this.stop();
+            let name = prompt("Insert your name!");
+            if(name != null){ 
+                this.model.insertScore(name);
+            }
+            else{
+                this.model.insertScore();
+            }
+            this.model.initializeBoard();
+            this.viewContainer.append(this.getBoardHtml(this.model));
+
+        }
+        else{
+            this.removeBird();
+            this.placeBird();
+        }
+    }
+
+    removeFirstColumn() {
         this.viewContainer.firstChild.firstChild.remove()
     }
+
     getColumnHtml(colData, content) {
             let colWidth = this.getColWidth(this.model.colCount);
             let rowHeight = this.getRowHeight(this.model.rowCount);
@@ -82,13 +137,7 @@ export default class GameController {
             
             colData.forEach(rowData => {
                 let rowElem = document.createElement('div');
-                if (rowData === this.model.gameCellUp()) {
-                    rowElem.style.backgroundColor = '#32CD32';
-                } else if (rowData === this.model.gameCellDown()) {
-                    rowElem.style.backgroundColor = '#228B22';
-                } else {
-                    rowElem.style.backgroundColor = '#00BFFF';
-                }
+                rowElem.style.backgroundColor = this.getCellColour(rowData);
 
                 rowElem.style.minHeight = rowHeight + 'px';
                 rowElem.style.maxHeight = rowHeight + 'px';
@@ -96,6 +145,23 @@ export default class GameController {
                 colElem.append(rowElem);
             });
             content.append(colElem);
+    }
+
+    getCellColour(rowData) {
+        switch(rowData) {
+            case this.model.gameCellUp():
+                return '#228B22'; 
+            case this.model.gameCellDown():
+                return '#228B22';
+            case this.model.birdCellOrange():
+                return '#FFA500';
+            case this.model.birdCellBlack():
+                return '#000000';
+            case this.model.birdCellWhite():
+                return '#FFFFFF';
+            default:
+                return '#00BFFF';
+        };
     }
 
     getBoardHtml(gamebrain) { 
@@ -107,5 +173,9 @@ export default class GameController {
         });
 
         return content;
+    }
+
+    displayScore() {
+        document.getElementById("scoreElem").textContent = this.model.getScore();
     }
 }

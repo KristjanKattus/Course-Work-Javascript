@@ -19,9 +19,9 @@ view.append(game_view);
 
 function gameControlClick(e) {
     console.log(e);
-    let v;
     switch (e.target.id) {
         case 'game':
+            gameController.stop();
             statisticsController.stop();
             gameController.run();
             break;
@@ -34,10 +34,15 @@ function gameControlClick(e) {
     }
 }
 
-statisticsController.run();
-
-
 window.addEventListener('resize', () => {
     gameController.resizeUi();
     statisticsController.resizeUi();
 });
+
+window.addEventListener('keypress', () => {
+    gameController.birdJump()
+})
+
+
+
+statisticsController.run();
