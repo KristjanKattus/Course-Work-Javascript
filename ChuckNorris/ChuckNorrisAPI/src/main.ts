@@ -1,4 +1,4 @@
-import Aurelia from 'aurelia';
+import Aurelia, {RouterConfiguration} from 'aurelia';
 import { MyApp } from './my-app';
 import 'jquery';
 import 'popper.js';
@@ -10,5 +10,6 @@ import '../static/site.css';
 
 
 Aurelia
+  .register(RouterConfiguration.customize({ useUrlFragmentHash: false }))
   .app(MyApp)
   .start();

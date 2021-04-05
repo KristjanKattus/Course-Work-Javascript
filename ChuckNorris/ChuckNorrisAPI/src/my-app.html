@@ -1,5 +1,21 @@
+<import from="./views/home-view.html" />
+<import from="./views/science-view" />
+<import from="./views/sport-view" />
+<import from="./views/food-view" />
 
 
 
+<import from="./app-header" />
 
-<div class="message">${message}</div>
+<app-header></app-header>
+
+<div class="container">
+    <main role="main" class="pb-3">
+        <au-viewport default="home-view"></au-viewport>
+    </main>
+</div>
+<footer class="border-top footer text-muted">
+    <div class="container">
+        &copy; 2021 - Au2
+    </div>
+</footer>

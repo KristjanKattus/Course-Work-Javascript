@@ -1,0 +1,23 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th>JokeID</th>
+            <th>Joke</th>
+            <th>Created at</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        <tr repeat.for="joke of jokeCategory.jokes">
+            <td>
+                ${joke.id}
+            </td>
+            <td>
+                ${joke.value}
+            </td>
+            <td>
+                ${joke.created_at}
+            </td>
+        </tr>
+    </tbody>
+</table>

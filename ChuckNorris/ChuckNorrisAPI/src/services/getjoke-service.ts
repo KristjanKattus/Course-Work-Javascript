@@ -11,12 +11,12 @@ export class JokeService {
 
     async getJoke(cat: string): Promise<IJoke> {
         const response = await this.httpClient
-            .get('https://api.chucknorris.io/jokes/random?category=${cat}', { cache: "no-store" });
-        console.log(response);
+            .get(`https://api.chucknorris.io/jokes/random?category=${cat}`, { cache: "no-store" });
         if (response.ok) {
-            const data = (await response.json());
+            const data = (await response.json() as IJoke);
             return data;
         }
+        
         
     }
 

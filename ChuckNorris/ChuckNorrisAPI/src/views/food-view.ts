@@ -1,16 +1,17 @@
 import {JokeState} from "../state/joke-state";
+import { IJokeCategory} from "../domain/IJokeCategory";
 
-export class TravelView{
+export class FoodView{
 
 
     private page: number = 2;
     private jokeCategory: IJokeCategory;
 
     constructor(private jokeState : JokeState){
-        
     }
-
+    
     async attached() {
-        
+        this.jokeState.requestJoke(this.page, 1);
+        this.jokeCategory = this.jokeState.getJokeCat(this.page);
     }
 }

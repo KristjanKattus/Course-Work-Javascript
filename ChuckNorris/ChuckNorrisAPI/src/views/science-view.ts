@@ -8,9 +8,12 @@ export class ScienceView{
     private jokeCategory: IJokeCategory;
 
     constructor(private jokeState : JokeState){
-    }
+        
+    }   
 
     async attached() {
-        this.jokeState.requestJoke(page)
+       
+        this.jokeState.requestJoke(this.page, 1);
+        this.jokeCategory = this.jokeState.getJokeCat(this.page);
     }
 }
