@@ -25,8 +25,6 @@ export class JokeState {
         for(let i = 0; i < 3; i++){
             this.requestJoke(i, 5);
         }
-
-
     }
 
     async requestJoke(pageNumber: number, amount: number): Promise<void> {

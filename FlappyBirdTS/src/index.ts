@@ -42,6 +42,9 @@ window.addEventListener('resize', () => {
 window.addEventListener('keypress', () => {
     gameController.birdJump()
 })
+window.addEventListener('touchstart', () => {
+    gameController.birdJump()
+})
 
 
 

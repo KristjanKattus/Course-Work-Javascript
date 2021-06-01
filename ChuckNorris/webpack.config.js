@@ -5,6 +5,7 @@ const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 
 const cssLoader = 'css-loader';
 
+const baseUrl = '/chuck/';
 
 const postcssLoader = {
   loader: 'postcss-loader',
@@ -26,7 +27,8 @@ module.exports = function(env, { analyze }) {
     },
     output: {
       path: path.resolve(__dirname, 'dist'),
-      filename: production ? '[name].[contenthash].bundle.js' : '[name].bundle.js'
+		  publicPath: production ? '/chuck/' : '/',
+		  filename: production ? '[name].[contenthash].bundle.js' : '[name].bundle.js'
     },
     resolve: {
       extensions: ['.ts', '.js'],
@@ -49,7 +51,7 @@ module.exports = function(env, { analyze }) {
       ]
     },
     plugins: [
-      new HtmlWebpackPlugin({ template: 'index.html' }),
+      new HtmlWebpackPlugin({ template: 'index.html', base: production ? '/chuck/' : '/', }),    
       analyze && new BundleAnalyzerPlugin()
     ].filter(p => p)
   }
